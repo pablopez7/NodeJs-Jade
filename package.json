@@ -1,0 +1,19 @@
+{
+  "name": "node-jade",
+  "version": "1.0.0",
+  "description": "Desarrollo de App con NodeJs, Express, MongoDB y Jade",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Pablo López @pablopez07",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.14.0",
+    "jade": "^1.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}
