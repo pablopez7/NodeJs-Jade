@@ -2,6 +2,7 @@
 
 const express = require('express')
 const bodyParser = require('body-parser')
+const session = require('express-session')
 const mongoose = require('mongoose')
 
 const User = require('./models/user')
@@ -12,18 +13,29 @@ const port = process.env.PORT || 3030
 app.set('/statics', express.static('assets'))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+app.use(session({
+    secret: '123dsae5Aas25',
+    resave: false,
+    saveUninitialized: false
+}))
+
 app.set('view engine', 'jade')
 
 //Routes
 app.get('/', (req, res) => {
+    console.log(req.session.user_id)
     res.render('index')
 })
 
-app.get('/login', (req, res) => {
+app.get('/signup', (req, res) => {
     User.find((err, doc) => {
         console.log(doc)
-        res.render('login')
+        res.render('signup')
     })
+})
+
+app.get('/login', (req, res) => {
+    res.render('login')
 })
 
 app.post('/users', (req, res) => {
@@ -34,14 +46,39 @@ app.post('/users', (req, res) => {
         username: req.body.username
     })
 
-    user.save((err) => {
-        if (err) {
+    user.save().then(function(us) {
+        res.send('El usuario se ha guardado correctamente')
+    },function(err) {
+        if(err){
             console.log(String(err))
+            res.send('El usuario no se ha guadado')
         }
-        res.send('Recibimos tus datos')
     })
 })
 
+/*
+app.post('/sessions', (req, res) => {
+    User.findOne({email: req.body.email, password: req.body.password},function(err, user){
+        req.session.user_id = user._id
+        res.send('Hola mundo');
+    })
+})*/
+
+app.post("/sessions", function (req, res) {
+    User.findOne({
+        email: req.body.email,
+        password: req.body.password
+    }, function (err, user) {
+        if (user != null) {
+            req.session.user_id = user._id
+            res.send("Hola mundo")
+        } else {
+            res.render("login")
+        }
+    })
+})
+
+mongoose.Promise = global.Promise
 mongoose.connect('mongodb://localhost:27017/angular', (err, resp) => {
   if (err) {
     return console.log(`Error al conectar la base de datos ${err}`)
