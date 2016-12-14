@@ -5,14 +5,13 @@ const bodyParser = require('body-parser')
 const session = require('express-session')
 const mongoose = require('mongoose')
 
-const User = require('./models/user')
+const User = require('./models/user').User
 const routerApp = require('./routes_app')
 const sessionMiddleware = require('./middlewares/session')
 
 const app = express()
 const port = process.env.PORT || 3030
 
-app.set('/statics', express.static('assets'))
 app.use(bodyParser.urlencoded({
     extended: true
 }))
@@ -23,6 +22,8 @@ app.use(session({
     saveUninitialized: false
 }))
 
+
+app.use('/statics', express.static('assets'))
 app.set('view engine', 'jade')
 
 //Routes
@@ -79,9 +80,9 @@ app.post("/sessions", function (req, res) {
     }, function (err, user) {
         if (user != null) {
             req.session.user_id = user._id
-            res.send("Hola mundo")
+            res.redirect('/app')
         } else {
-            res.render("login")
+            res.render('login')
         }
     })
 })
